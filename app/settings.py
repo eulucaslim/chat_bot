@@ -6,4 +6,4 @@ load_dotenv()
 
 OPENAI_API_KEY: Final[str] = os.getenv("OPENAI_API_KEY")
 GEMINI_API_KEY: Final[str] = os.getenv("GEMINI_API_KEY")
-
+CHATBOT_PORT: Final[int] = os.getenv("CHATBOT_PORT")

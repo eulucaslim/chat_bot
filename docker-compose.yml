@@ -1,0 +1,8 @@
+services:
+  chatbot:
+    image: chatbot1.0
+    ports:
+      - "${CHATBOT_PORT}:${CHATBOT_PORT}"
+    networks:
+      - chatbot_network
+    
