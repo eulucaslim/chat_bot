@@ -15,6 +15,7 @@ def send_message_whatsapp(user: User):
     except Exception as e:
         print(e)
 
-@app.get("/get_webhook")
-def get_webhook():
-    WahaAPI.try_webhook()
+@app.post("/webhook")
+def webhook():
+    response = WahaAPI.webhook()
+    return JSONResponse(content=response, status_code=200)
