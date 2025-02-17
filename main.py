@@ -1,21 +1,17 @@
 from app.lib.Gemini import Gemini
 from app.lib.WahaAPI import WahaAPI
 from app.models.User import User
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
+import json
 
 app = FastAPI()
 gemini  = Gemini()
 
-@app.post("/send_message")
-def send_message_whatsapp(user: User):
+@app.post("/receive_message")
+async def receive_message(request: Request):
     try:
-        response = WahaAPI.send_message(user.phone_number, user.text)
-        return JSONResponse(content=response, status_code=200)
+        response = await request.json()
+        return JSONResponse(content=json.loads(response), status_code=200)
     except Exception as e:
         print(e)
-
-@app.post("/webhook")
-def webhook():
-    response = WahaAPI.webhook()
-    return JSONResponse(content=response, status_code=200)

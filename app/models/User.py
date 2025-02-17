@@ -1,5 +1,5 @@
 from pydantic import BaseModel
 
 class User(BaseModel):
-    phone_number: int
+    chat_id: int
     text: str
