@@ -1,4 +1,4 @@
-from app.settings import WAHA_HOST, WAHA_PORT, WAHA_ADMIN, WHATSAPP_HOOK_URL
+from config.settings import WAHA_HOST, WAHA_PORT, WAHA_ADMIN, WHATSAPP_HOOK_URL
 from time import sleep
 import requests
 
@@ -6,7 +6,7 @@ import requests
 class WahaAPI:
     class WhatsError(Exception):
         pass
-    def receive_message():
+    def receive_message() -> dict:
         url = WHATSAPP_HOOK_URL
         response = requests.get(url)
 
@@ -15,7 +15,7 @@ class WahaAPI:
         else:
             raise WahaAPI.WhatsError("Have any error in your datas, please check!")
 
-    def send_message(chat_id: int, text: str):
+    def send_message(chat_id: int, text: str) -> dict | None:
         url = f"http://{WAHA_HOST}:{WAHA_PORT}/api/sendText"
         headers = {
             'accept': 'application/json',
@@ -112,6 +112,3 @@ class WahaAPI:
         WahaAPI.start_typing(chat_id=chat_id)
         sleep(seconds)
         WahaAPI.stop_typing(chat_id=chat_id)
-    
-    # def webhook():
-    #     response = requests.get(url=WHATSAPP_HOOK_URL, headers=)

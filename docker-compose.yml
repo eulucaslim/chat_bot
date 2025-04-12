@@ -5,4 +5,9 @@ services:
       - "${CHATBOT_PORT}:${CHATBOT_PORT}"
     networks:
       - chatbot_network
+
+networks:
+  chatbot_network:
+    name: chatbot_network
+    driver: bridge
     

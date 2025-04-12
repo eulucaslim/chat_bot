@@ -1,20 +1,19 @@
-from app.lib.Gemini import Gemini
-from app.lib.WahaAPI import WahaAPI
-from app.lib.DataBase import DataBase
-from app.models.User import User
+from lib.gemini import Gemini
+from lib.waha_api import WahaAPI
+from lib.database import DataBase
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
-import json
 
 app = FastAPI()
 gemini  = Gemini()
+db = DataBase()
 
 @app.post("/receive_message")
 async def receive_message(request: Request):
     try:
         response = await request.json()
         ia_response = gemini.generate_response(response["payload"]["body"])
-        DataBase.save_messages(response)
+        db.save_messages(response)
         del response["_id"]
         WahaAPI.reply(
             response["payload"]["from"], 
