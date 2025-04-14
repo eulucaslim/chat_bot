@@ -1,4 +1,4 @@
-from config.settings import WAHA_HOST, WAHA_PORT, WAHA_ADMIN, WHATSAPP_HOOK_URL
+from app.config.settings import WAHA_HOST, WAHA_PORT, WAHA_ADMIN, WHATSAPP_HOOK_URL
 from time import sleep
 import requests
 
@@ -71,44 +71,3 @@ class WahaAPI:
             return response.json()
         else:
             raise WahaAPI.WhatsError("Have any error in your datas, please check!")
-
-    def start_typing(chat_id):
-        url = f"http://{WAHA_HOST}:{WAHA_PORT}/api/startTyping"
-        headers = {
-            'accept': 'application/json',
-            'Content-Type': 'application/json'
-        }
-        data = {
-                "session": WAHA_ADMIN,
-                "chatId": chat_id,
-        }
-
-        response = requests.post(url, headers=headers, json=data)
-
-        if response.status_code <= 204:
-            return response.json()
-        else:
-            raise WahaAPI.WhatsError("Have any error in your datas, please check!")
-
-    def stop_typing(chat_id):
-        url = f"http://{WAHA_HOST}:{WAHA_PORT}/api/stopTyping"
-        headers = {
-            'accept': 'application/json',
-            'Content-Type': 'application/json'
-        }
-        data = {
-                "session": WAHA_ADMIN,
-                "chatId": chat_id,
-        }
-
-        response = requests.post(url, headers=headers, json=data)
-
-        if response.status_code <= 204:
-            return response.json()
-        else:
-            raise WahaAPI.WhatsError("Have any error in your datas, please check!")
-
-    def typing(chat_id, seconds):
-        WahaAPI.start_typing(chat_id=chat_id)
-        sleep(seconds)
-        WahaAPI.stop_typing(chat_id=chat_id)

@@ -1,8 +1,17 @@
 services:
   chatbot:
+    container_name: chatbot
     image: chatbot1.0
     ports:
       - "${CHATBOT_PORT}:${CHATBOT_PORT}"
+    networks:
+      - chatbot_network
+  
+  waha_api:
+    container_name: waha_api
+    image: devlikeapro/waha
+    ports:
+      - "${WAHA_PORT}:${WAHA_PORT}"
     networks:
       - chatbot_network
 

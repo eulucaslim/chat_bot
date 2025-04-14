@@ -1,4 +1,4 @@
-from config.settings import GEMINI_API_KEY
+from app.config.settings import GEMINI_API_KEY
 from google import genai
 
 

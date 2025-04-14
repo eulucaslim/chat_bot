@@ -1,4 +1,4 @@
-from config.settings import ENV, DATABASE_HOST, DATABASE_PORT
+from app.config.settings import ENV, DATABASE_HOST, DATABASE_PORT
 from pymongo import MongoClient
 
 class DataBase(object):
@@ -11,5 +11,11 @@ class DataBase(object):
     def save_messages(self, data: dict) -> None:
         try:
             self.db.messages.insert_one(data)
+        except Exception as e:
+            print(e)
+
+    def save_answer(self, data: str) -> None:
+        try:
+            self.db.answer.insert_one({"answer": data})
         except Exception as e:
             print(e)

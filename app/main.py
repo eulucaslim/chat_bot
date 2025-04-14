@@ -1,6 +1,7 @@
-from lib.gemini import Gemini
-from lib.waha_api import WahaAPI
-from lib.database import DataBase
+from app.lib.gemini import Gemini
+from app.lib.waha_api import WahaAPI
+from app.lib.database import DataBase
+from app.utils.prompts import welcome_words
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
@@ -12,7 +13,8 @@ db = DataBase()
 async def receive_message(request: Request):
     try:
         response = await request.json()
-        ia_response = gemini.generate_response(response["payload"]["body"])
+        ia_response = gemini.generate_response(welcome_words() + response["payload"]["body"])
+        db.save_answer(ia_response)
         db.save_messages(response)
         del response["_id"]
         WahaAPI.reply(
@@ -22,4 +24,4 @@ async def receive_message(request: Request):
         )
         return JSONResponse(content=response, status_code=200)
     except Exception as e:
-        print(e)
+        return JSONResponse({"error": str(e)}, status_code=400)
