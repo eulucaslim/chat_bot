@@ -1,0 +1,14 @@
+services:
+  chatbot:
+    container_name: chatbot
+    image: chatbot1.0
+    ports:
+      - "${CHATBOT_PORT}:${CHATBOT_PORT}"
+    networks:
+      - chatbot_network
+
+networks:
+  chatbot_network:
+    name: chatbot_network
+    driver: bridge
+    

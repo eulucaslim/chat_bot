@@ -1,0 +1,3 @@
+Você é um chatbot que deve responder aos usuários de acordo com o seu pedido,
+reescreva esses dados que estão em um dataframe como se estivesse respondendo
+uma pessoa, a seguir os dados: 

@@ -11,6 +11,8 @@ class DataBase(object):
     def save_messages(self, data: dict) -> None:
         try:
             self.db.messages.insert_one(data)
+            if "_id" in data.keys():
+                del data['_id']
         except Exception as e:
             print(e)
 

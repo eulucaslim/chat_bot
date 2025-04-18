@@ -1,23 +1,24 @@
 from app.lib.gemini import Gemini
 from app.lib.waha_api import WahaAPI
 from app.lib.database import DataBase
-from app.utils.prompts import welcome_words
+from app.lib.sheets import Sheets
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
+sheets = Sheets()
 app = FastAPI()
 gemini  = Gemini()
 db = DataBase()
+waha = WahaAPI()
 
 @app.post("/receive_message")
 async def receive_message(request: Request):
     try:
         response = await request.json()
-        ia_response = gemini.generate_response(welcome_words() + response["payload"]["body"])
+        ia_response = sheets.verify_response(response["payload"]["body"])
         db.save_answer(ia_response)
         db.save_messages(response)
-        del response["_id"]
-        WahaAPI.reply(
+        waha.reply(
             response["payload"]["from"], 
             response["payload"]["id"], 
             ia_response
