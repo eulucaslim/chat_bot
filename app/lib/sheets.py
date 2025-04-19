@@ -16,14 +16,33 @@ class Sheets:
         ia_response = gemini.generate_response(stock_prompt + data_sheet)
         return ia_response
 
-    def insert_data(data: str):
-        pass
+    def insert_data(self, data: dict):
+        try:
+            list_new_data = list()
+            list_new_data.append(data)
+            new_data = pd.DataFrame(list_new_data)
+            new_data.to_csv(self.stock_path, mode='a', header=False, index=False)
+            return "Produto Cadastrado com Sucesso!"
+        except Exception as e:
+            return e
+    
+    def format_data(self, data: str):
+        response = dict()
+        list_products = [p.strip() for p in data.split(',')]
+        response['Produto'] = list_products[0]
+        response['Quantidade'] = list_products[1]
+        response['Valor'] = list_products[2]
+        return response
 
     def verify_response(self, msg: str):
-        if msg in ['estoque', 'Estoque']:
-            return self.get_stock()
-        elif msg in ['Oi', 'oi', 'Bom dia', 'bom dia']:
+        if msg in ['Oi', 'oi', 'Bom dia', 'bom dia']:
             return gemini.welcome(msg)
+        elif msg == '1':
+            return gemini.insert_data(msg)
+        elif msg == '2':
+            return self.get_stock()
+        elif ',' in msg:
+            return self.insert_data(self.format_data(msg))
         else:
             return gemini.default_answer(msg)
     

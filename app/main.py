@@ -9,7 +9,6 @@ sheets = Sheets()
 app = FastAPI()
 gemini  = Gemini()
 db = DataBase()
-waha = WahaAPI()
 
 @app.post("/receive_message")
 async def receive_message(request: Request):
@@ -18,7 +17,7 @@ async def receive_message(request: Request):
         ia_response = sheets.verify_response(response["payload"]["body"])
         db.save_answer(ia_response)
         db.save_messages(response)
-        waha.reply(
+        WahaAPI.reply(
             response["payload"]["from"], 
             response["payload"]["id"], 
             ia_response

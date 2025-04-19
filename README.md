@@ -23,4 +23,11 @@ docker compose up -d
 ```
 ## Criando uma sessão no Waha
 
-Pesquise a rota de /dashboard e inicie uma sessão com o número que deseja:
+Pesquise a rota de /dashboard e inicie uma sessão com o número que deseja!
+
+## Inicialize o ngrok
+
+Utilize o comando:
+```
+ngrok http <port>
+```
