@@ -41,7 +41,7 @@ class Sheets:
             return gemini.insert_data(msg)
         elif msg == '2':
             return self.get_stock()
-        elif ',' in msg:
+        elif msg.count(',') == 2:
             return self.insert_data(self.format_data(msg))
         else:
             return gemini.default_answer(msg)
