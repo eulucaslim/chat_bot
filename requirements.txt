@@ -102,3 +102,4 @@ watchfiles==1.0.4
 wcwidth==0.2.13
 websockets==14.2
 yarl==1.18.3
+pandas==2.2.3

@@ -6,7 +6,7 @@ services:
       - "${CHATBOT_PORT}:${CHATBOT_PORT}"
     networks:
       - chatbot_network
-  
+
   waha_api:
     container_name: waha_api
     image: devlikeapro/waha
@@ -14,6 +14,18 @@ services:
       - "${WAHA_PORT}:${WAHA_PORT}"
     networks:
       - chatbot_network
+    depends_on:
+      - chatbot
+
+  kafka:
+    container_name: 'kafka-chatbot'
+    image: apache/kafka:3.9.1
+    ports:
+      - "${KAFKA_PORT}:${KAFKA_PORT}"
+    networks:
+      - chatbot_network
+    depends_on:
+      - chatbot
 
 networks:
   chatbot_network:
