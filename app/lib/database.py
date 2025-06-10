@@ -14,10 +14,10 @@ class DataBase(object):
             if "_id" in data.keys():
                 del data['_id']
         except Exception as e:
-            print(e)
+            return {'error': e}
 
     def save_answer(self, data: str) -> None:
         try:
             self.db.answer.insert_one({"answer": data})
         except Exception as e:
-            print(e)
+            return {'error': e}

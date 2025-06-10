@@ -1,27 +1,20 @@
-from app.lib.gemini import Gemini
-from app.lib.waha_api import WahaAPI
-from app.lib.database import DataBase
-from app.lib.sheets import Sheets
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Depends
 from fastapi.responses import JSONResponse
+from app.services.message_service import MessageService
 
-sheets = Sheets()
-app = FastAPI()
-gemini  = Gemini()
-db = DataBase()
+app = FastAPI(
+    title="ChatBot in Python!",
+    version="1.0.0"
+)
 
-@app.post("/receive_message")
-async def receive_message(request: Request):
+@app.post("/receive_message", tags=['Webhook'])
+async def receive_message(
+    request: Request, 
+    message_service: MessageService = Depends()
+):
     try:
         response = await request.json()
-        ia_response = sheets.verify_response(response["payload"]["body"])
-        db.save_answer(ia_response)
-        db.save_messages(response)
-        WahaAPI.reply(
-            response["payload"]["from"], 
-            response["payload"]["id"], 
-            ia_response
-        )
+        await message_service.process_message(response)
         return JSONResponse(content=response, status_code=200)
     except Exception as e:
         return JSONResponse({"error": str(e)}, status_code=400)
