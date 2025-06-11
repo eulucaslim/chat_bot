@@ -11,7 +11,7 @@ jobs:
       zookeeper:
         image: bitnami/zookeeper:latest
         env:
-          ALLOW_ANONYMOUS_LOGIN: "yes"
+          ALLOW_ANONYMOUS_LOGIN: yes
         ports:
           - 2181:2181
       kafka:
