@@ -1,0 +1,63 @@
+name: Compare Branch Behavior
+
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  compare-branches:
+    runs-on: ubuntu-latest
+    services:
+      zookeeper:
+        image: confluentinc/cp-zookeeper:latest
+        ports:
+          - 2181:2181
+      kafka:
+        image: confluentinc/cp-kafka:latest
+        env:
+          KAFKA_CFG_ZOOKEEPER_CONNECT: zookeeper:2181
+          KAFKA_CFG_LISTENERS: PLAINTEXT://:9092
+          KAFKA_CFG_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+          ALLOW_PLAINTEXT_LISTENER: "yes"
+        ports:
+          - 9092:9092
+        options: >-
+          --health-cmd "kafka-topics.sh --bootstrap-server localhost:9092 --list"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+
+    steps:
+      - name: Checkout PR branch
+        uses: actions/checkout@v4
+        with:
+          path: feature
+
+      - name: Checkout main branch
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          path: main
+
+      - name: Build Docker containers
+        run: |
+          docker build -t app_main ./main
+          docker build -t app_feature ./feature
+
+      - name: Run containers and inject messages
+        run: |
+          docker network create kafka_net
+
+          docker run -d --name app_main --network kafka_net -e INPUT_TOPIC=entrada -e OUTPUT_TOPIC=saida_main app_main
+          docker run -d --name app_feature --network kafka_net -e INPUT_TOPIC=entrada -e OUTPUT_TOPIC=saida_feature app_feature
+
+          # injeta a mesma mensagem nos dois
+          echo '{"valor": 10}' | kafka-console-producer.sh --broker-list localhost:9092 --topic entrada
+
+          # espera processamento
+          sleep 10
+
+      - name: Compare Results
+        run: |
+          pip install kafka-python
+          python compare/compare_outputs.py
