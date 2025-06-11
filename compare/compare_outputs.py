@@ -1,7 +1,7 @@
 from kafka import KafkaConsumer
 import json
 
-def get_messages(topic):
+def get_messages(topic: str) -> list:
     consumer = KafkaConsumer(
         topic,
         bootstrap_servers='localhost:9092',

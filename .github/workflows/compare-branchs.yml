@@ -9,11 +9,11 @@ jobs:
     runs-on: ubuntu-latest
     services:
       zookeeper:
-        image: confluentinc/cp-zookeeper:latest
+        image: bitnami/zookeeper:latest
         ports:
           - 2181:2181
       kafka:
-        image: confluentinc/cp-kafka:latest
+        image: bitnami/kafka:latest
         env:
           KAFKA_CFG_ZOOKEEPER_CONNECT: zookeeper:2181
           KAFKA_CFG_LISTENERS: PLAINTEXT://:9092
