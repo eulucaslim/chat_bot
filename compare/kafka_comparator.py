@@ -1,6 +1,6 @@
 import os
 import json
-from kafka import KafkaProducer
+from confluent_kafka import Producer
 import httpx
 import time
 
@@ -9,7 +9,7 @@ API_MAIN_URL = os.environ['API_MAIN_URL']
 API_BRANCH_URL = os.environ['API_BRANCH_URL']
 TOPIC = 'test-topic'
 
-producer = KafkaProducer({'bootstrap.servers': KAFKA_BROKER})
+producer = Producer({'bootstrap.servers': KAFKA_BROKER})
 
 def send_test_message(payload):
     producer.send(TOPIC, value=json.dumps(payload).encode('utf-8'))

@@ -42,7 +42,7 @@ jobs:
           docker run -d -p 8002:8000 --name api-main api-main
 
       - name: Install dependencies
-        run: pip install confluent-kafka httpx
+        run: pip install confluent-kafka httpx 
 
       - name: Run Kafka test comparator
         run: python pr_branch/compare/kafka_comparator.py
