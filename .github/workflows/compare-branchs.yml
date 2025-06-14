@@ -1,7 +1,7 @@
 name: Compare API Responses via Kafka
 
 on:
-  pull_request
+  pull_request:
 
 jobs:
   compare:
@@ -11,7 +11,7 @@ jobs:
         image: confluentinc/cp-zookeeper:latest
         ports:
           - 2181:2181
-        environment:
+        env:
           ZOOKEEPER_SERVER_ID: 1
           ZOOKEEPER_CLIENT_PORT: 2181
           ZOOKEEPER_TICK_TIME: 2000
