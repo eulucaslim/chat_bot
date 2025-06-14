@@ -13,6 +13,7 @@ cffi==1.17.1
 charset-normalizer==3.4.1
 ChatterBot==1.2.0
 click==8.1.8
+confluent-kafka==2.10.1
 consonance==0.1.2
 cryptography==44.0.0
 decorator==5.1.1
