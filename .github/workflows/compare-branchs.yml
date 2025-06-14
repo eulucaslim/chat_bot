@@ -45,7 +45,7 @@ jobs:
         run: pip install confluent-kafka httpx
 
       - name: Run Kafka test comparator
-        run: python main_branch/compare/kafka_comparator.py
+        run: python pr_branch/compare/kafka_comparator.py
         env:
           KAFKA_BROKER: localhost:9092
           API_MAIN_URL: http://localhost:8001  # ajuste a porta se necessário
