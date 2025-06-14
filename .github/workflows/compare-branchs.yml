@@ -1,7 +1,7 @@
 name: Compare API Responses via Kafka
 
 on:
-  pull_request:
+  pull_request
 
 jobs:
   compare:
