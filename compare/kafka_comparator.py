@@ -12,7 +12,7 @@ TOPIC = 'test-topic'
 producer = Producer({'bootstrap.servers': KAFKA_BROKER})
 
 def send_test_message(payload):
-    producer.send(TOPIC, value=json.dumps(payload).encode('utf-8'))
+    producer.produce(TOPIC, value=json.dumps(payload).encode('utf-8'))
     producer.flush()
 
 test_payloads = [
