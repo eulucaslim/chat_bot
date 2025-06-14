@@ -55,6 +55,6 @@ jobs:
       - name: Run Kafka test comparator
         run: python pr_branch/compare/kafka_comparator.py
         env:
-          KAFKA_BROKER: kafka:9092
+          KAFKA_BROKER: 0.0.0.0:9092
           API_MAIN_URL: http://api-main:8001  # ajuste a porta se necessário
           API_BRANCH_URL: http://api-pr:8002  # ajuste a porta se
