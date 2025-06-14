@@ -38,3 +38,4 @@ if main_resp != branch_resp:
     exit(1)
 else:
     print("Respostas iguais.")
+    print("TESTEEE")
