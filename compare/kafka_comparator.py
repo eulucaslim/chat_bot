@@ -4,9 +4,9 @@ from confluent_kafka import Producer
 import httpx
 import time
 
-KAFKA_BROKER = os.environ['KAFKA_BROKER']
-API_MAIN_URL = os.environ['API_MAIN_URL']
-API_BRANCH_URL = os.environ['API_BRANCH_URL']
+KAFKA_BROKER = os.getenv('KAFKA_BROKER')
+API_MAIN_URL = os.environ('API_MAIN_URL')
+API_BRANCH_URL = os.environ('API_BRANCH_URL')
 TOPIC = 'test-topic'
 
 producer = Producer({'bootstrap.servers': KAFKA_BROKER})
