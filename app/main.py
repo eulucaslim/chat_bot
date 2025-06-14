@@ -1,53 +1,58 @@
-from app.services.message_service import MessageService
-from app.config.settings import KAFKA_ADMIN_CLIENT, KAFKA_BROKER
-from app.models.producer import ProduceMessage
-from app.utils.producer import produce_kafka_message, KAFKA_TOPIC
-from contextlib import asynccontextmanager
-from fastapi import FastAPI, Request, Depends, BackgroundTasks
+from threading import Thread
+from app.config.settings import KAFKA_BROKER
+from consumer.consumer import KAFKA_TOPIC
+from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
-from kafka.admin import KafkaAdminClient, NewTopic
+from kafka import KafkaProducer
+from confluent_kafka import Consumer
+import json
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-
-    admin_client = KafkaAdminClient(
-        bootstrap_servers=KAFKA_BROKER,
-        client_id=KAFKA_ADMIN_CLIENT
-    )
-    if not KAFKA_TOPIC in admin_client.list_topics():
-        admin_client.create_topics(
-            new_topics=[
-                NewTopic(
-                    name=KAFKA_TOPIC,
-                    num_partitions=1,
-                    replication_factor=1
-                )
-            ],
-            validate_only=False
-        )
-        # admin_client.delete_topics(topics=[KAFKA_TOPIC])
-    yield # separation point
 
 app = FastAPI(
     title="ChatBot in Python!",
-    version="1.0.0",
-    lifespan=lifespan
+    version="1.0.0"
 )
 
+producer = KafkaProducer(
+    bootstrap_servers=KAFKA_BROKER,
+    value_serializer=lambda v: json.dumps(v).encode('utf-8')
+)
+
+messages = []
+
+def kafka_consumer():
+    consumer = Consumer({
+        'bootstrap.servers': 'localhost:9092',
+        'group.id': 'mygroup',
+        'auto.offset.reset': 'earliest'
+    })
+    consumer.subscribe(['test-topic'])
+
+    while True:
+        msg = consumer.poll(1.0)
+        if msg is None:
+            continue
+        if msg.error():
+            print(f"Consumer error: {msg.error()}")
+            continue
+        # Armazena a mensagem em memória
+        messages.append(msg.value().decode('utf-8'))
+
+# Inicia o consumer em background
+Thread(target=kafka_consumer, daemon=True).start()
 
 @app.post("/receive_message", tags=['Webhook'])
 async def receive_message(
-    request: Request, 
-    message_service: MessageService = Depends()
+    request: Request
 ):
     try:
-        response = await request.json()
-        await message_service.process_message(response)
-        return JSONResponse(content=response, status_code=200)
+        payload = await request.json()
+        producer.send(KAFKA_TOPIC, payload)
+        producer.flush()
+        return JSONResponse(content={"message": "The message send to broker!"}, status_code=200)
     except Exception as e:
         return JSONResponse({"error": str(e)}, status_code=400)
 
-@app.post('/produce/message/', tags=["Produce Message"])
-async def produce_message(messageRequest : ProduceMessage, background_tasks : BackgroundTasks):
-    background_tasks.add_task(produce_kafka_message, messageRequest)
-    return {"message": "Message Received, tahnk you for sending a message!"}
+@app.get("/results")
+async def results():
+    return {"messages": messages}
