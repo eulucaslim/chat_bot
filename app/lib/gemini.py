@@ -18,18 +18,17 @@ class Gemini:
         return response.text
 
     def welcome(self, msg: str):
-        welcome_words = Gemini.read_prompt(self.welcome_path)
+        welcome_words = self.read_prompt(self.welcome_path)
         return self.generate_response(welcome_words + msg)
     
     def default_answer(self, msg: str):
-        default_prompt = Gemini.read_prompt(self.default_path)
+        default_prompt = self.read_prompt(self.default_path)
         return self.generate_response(default_prompt + msg) 
 
     def insert_data(self, msg: str):
-        insert_prompt = Gemini.read_prompt(self.insert_path)
+        insert_prompt = self.read_prompt(self.insert_path)
         return self.generate_response(insert_prompt + msg)
 
-    @staticmethod
-    def read_prompt(path: str):
+    def read_prompt(self, path: str):
         with open(path, "r", encoding='utf-8') as prompt:
             return prompt.read()

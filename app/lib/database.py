@@ -19,5 +19,7 @@ class DataBase(object):
     def save_answer(self, data: str) -> None:
         try:
             self.db.answer.insert_one({"answer": data})
+            if "_id" in data.keys():
+                del data['_id']
         except Exception as e:
             return {'error': e}
