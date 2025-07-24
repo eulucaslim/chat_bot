@@ -16,9 +16,9 @@ class DataBase(object):
         except Exception as e:
             return {'error': e}
 
-    def save_answer(self, data: str) -> None:
+    def save_answer(self, data: dict) -> None:
         try:
-            self.db.answer.insert_one({"answer": data})
+            self.db.answer.insert_one(data)
             if "_id" in data.keys():
                 del data['_id']
         except Exception as e:

@@ -1,6 +1,7 @@
 from app.config.settings import WAHA_HOST, WAHA_PORT, WAHA_ADMIN, WHATSAPP_HOOK_URL
 from time import sleep
 import requests
+import json
 
 
 class WahaAPI:
@@ -8,9 +9,10 @@ class WahaAPI:
     class WhatsError(Exception):
         pass
     
-    def __init__(self, chat_id: int, ai_response: str):
+    def __init__(self, chat_id: int, chat_response: dict):
         self.chat_id = chat_id
-        self.ai_response = ai_response
+        self.ai_response = chat_response['message']
+        self.file = chat_response['file'] if 'file' in chat_response else None 
         
     def send_message(self) -> dict | None:
         try:
@@ -67,6 +69,33 @@ class WahaAPI:
                 "chatId": self.chat_id,
             }
             response = requests.post(url, headers=headers, json=data)
+
+            if response.status_code <= 204:
+                return response.json()
+            else:
+                raise WahaAPI.WhatsError("Have any error in your datas, please check!")
+        except Exception as e:
+            return {"message": e}
+    
+    def send_file(self) -> dict | None:
+        try:
+            url = f"http://{WAHA_HOST}:{WAHA_PORT}/api/sendFile"
+            headers = {
+                'accept': 'application/json',
+                'Content-Type': 'application/json'
+            }
+            data = {
+                "session": WAHA_ADMIN,
+                "chatId": self.chat_id,
+                "file": {
+                    "mimetype": self.file['mimetype'],
+                    "filename": self.file['filename'],
+                    "data": self.file['data']
+                },
+                "caption": "Stock File"
+            }
+           
+            response = requests.post(url, headers=headers, json=data,)
 
             if response.status_code <= 204:
                 return response.json()

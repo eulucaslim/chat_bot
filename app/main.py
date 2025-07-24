@@ -21,19 +21,17 @@ async def receive_message(request: Request) -> dict:
         if data['payload']['body']:
             db.save_messages(data)
             chatbot_session = ChatBot(data)
-            ai_response = chatbot_session.verify_response()
-            waha_api = WahaAPI(chatbot_session.chat_id, ai_response)
+            chat_response = chatbot_session.verify_response()
+            waha_api = WahaAPI(chatbot_session.chat_id, chat_response)
             # See this other day
-            response = waha_api.send_seen()
+            waha_api.send_seen()
+            
+            response = waha_api.send_message()
+            db.save_answer(response)
             if response:
                 return JSONResponse(
                     content={"message": response}, 
                     status_code=200
-                )
-            else:
-                return JSONResponse(
-                    content={"message": response}, 
-                    status_code=400
                 )
         else:
             raise Exception("This request no has message content!")
