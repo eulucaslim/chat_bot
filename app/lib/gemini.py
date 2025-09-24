@@ -10,22 +10,22 @@ class Gemini:
         self.insert_path = "app/data/prompts/inserir_item.txt"
         self.format_path = "app/data/prompts/formatar_valor.txt"
 
-    def generate_response(self, msg: str) -> dict:
+    def generate_response(self, msg: str) -> str | None:
         response = self.client.models.generate_content(
             model="gemini-2.0-flash",
             contents=msg,
         )
-        return {"message": response.text}
+        return response.text
 
-    def welcome(self, msg: str) -> dict:
+    def welcome(self, msg: str) -> str | None:
         welcome_words = self.read_prompt(self.welcome_path)
         return self.generate_response(welcome_words + msg)
     
-    def default_answer(self, msg: str) -> dict:
+    def default_answer(self, msg: str) -> str | None:
         default_prompt = self.read_prompt(self.default_path)
         return self.generate_response(default_prompt + msg) 
 
-    def insert_data(self, msg: str) -> dict:
+    def insert_data(self, msg: str) -> str | None:
         insert_prompt = self.read_prompt(self.insert_path)
         return self.generate_response(insert_prompt + msg)
 

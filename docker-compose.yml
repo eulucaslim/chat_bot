@@ -14,6 +14,13 @@ services:
       - "${WAHA_PORT}:${WAHA_PORT}"
     networks:
       - chatbot_network
+  mongo:
+    container_name: mongodb
+    image: mongo
+    ports:
+      - "${DATABASE_PORT}:${DATABASE_PORT}"
+    depends_on:
+      - chatbot
 
 networks:
   chatbot_network:

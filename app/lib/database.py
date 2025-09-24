@@ -4,11 +4,9 @@ from pymongo import MongoClient
 class DataBase(object):
 
     if ENV == "prod":
-        db: MongoClient = MongoClient(
-            f"mongodb://{DATABASE_HOST}:{DATABASE_PORT}/"
-            f"?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+2.3.8")["Messages"]
+        db = MongoClient(f"mongodb://{DATABASE_HOST}:{DATABASE_PORT}/")["Messages"]
     
-    def save_messages(self, data: dict) -> None:
+    def save_messages(self, data: dict) ->  None | dict[str, Exception]:
         try:
             self.db.messages.insert_one(data)
             if "_id" in data.keys():
@@ -16,7 +14,7 @@ class DataBase(object):
         except Exception as e:
             return {'error': e}
 
-    def save_answer(self, data: dict) -> None:
+    def save_answer(self, data) -> None | dict[str, Exception]:
         try:
             self.db.answer.insert_one(data)
             if "_id" in data.keys():

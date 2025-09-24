@@ -14,7 +14,7 @@ db = DataBase()
 
 
 @app.post("/receive_message", tags=['Webhook'])
-async def receive_message(request: Request) -> dict:
+async def receive_message(request: Request):
     try:
         data = await request.json()
         # If has content in the message
