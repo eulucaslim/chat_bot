@@ -1,7 +1,16 @@
 services:
   chatbot:
     container_name: chatbot
-    image: chatbot-python:latest
+    image: chatbot-python:latest   
+    environment:
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - CHATBOT_PORT=${CHATBOT_PORT}
+      - WAHA_HOST=${WAHA_HOST}
+      - WAHA_PORT=${WAHA_PORT}
+      - WAHA_ADMIN=${WAHA_ADMIN}
+      - ENV=${ENV}
+      - DATABASE_HOST=${DATABASE_HOST}
+      - DATABASE_PORT=${DATABASE_PORT}
     ports:
       - "${CHATBOT_PORT}:${CHATBOT_PORT}"
     networks:
