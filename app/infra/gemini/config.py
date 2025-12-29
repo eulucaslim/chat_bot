@@ -1,0 +1,11 @@
+from app.core.settings import GEMINI_API_KEY
+from google import genai
+
+
+class Gemini:
+    def __init__(self):
+        self.client = genai.Client(api_key=GEMINI_API_KEY)
+        self.welcome_path = "app/data/prompts/welcome.txt"
+        self.default_path = "app/data/prompts/response_pattern.txt"
+        self.insert_path = "app/data/prompts/insert_item.txt"
+        self.model = "gemini-2.0-flash"

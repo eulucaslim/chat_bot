@@ -1,0 +1,10 @@
+Credentials generated.
+
+Dashboard and Swagger:
+  - Username: admin
+  - Password: 448dc6d67102432d8468a3b397537130
+
+API key: 
+  - b3296596f30c4bb583cc9a8e51496d19
+
+Use it in the Dashboard connection flow: https://waha.devlike.pro/docs/how-to/dashboard/#api-key

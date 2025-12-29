@@ -1,19 +1,19 @@
-from app.lib.gemini import Gemini
+from app.services.gemini_service import GeminiService
 import pandas as pd
 
 class ChatBot:
     def __init__(self, message: dict):
         self.content_message = message['payload']['body']
         self.chat_id = message['payload']['from']
-        self.prompt_path = "app/data/prompts/get_stock.txt"
-        self.stock_path = "app/data/databases/estoque.csv"
-        self.gemini = Gemini()
+        self.prompt_path = "app/db/prompts/get_stock.txt"
+        self.stock_path = "app/db/databases/estoque.csv"
+        self.gemini_service = GeminiService()
 
     def get_stock(self) -> str | None:
         df = pd.read_csv(self.stock_path)
         data_sheet = df.to_string(index=False)
-        stock_prompt = self.gemini.read_prompt(self.prompt_path)
-        ia_response = self.gemini.generate_response(stock_prompt + data_sheet)
+        stock_prompt = self.gemini_service.read_prompt(self.prompt_path)
+        ia_response = self.gemini_service.generate_response(stock_prompt + data_sheet)
 
         return ia_response
 
