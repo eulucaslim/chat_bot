@@ -10,12 +10,12 @@ class MessageRepository:
 	
 	def save_messages(self, data: Dict) ->  None | Exception:
 		try:
-				self.messages.insert_one(data)
+			self.messages.insert_one(data)
 		except (Exception, PyMongoError) as e:
 				raise e
 
 	def save_answer(self, data: Dict) -> None | Exception:
 			try:
-					self.answers.insert_one(data)
+				self.answers.insert_one(data)
 			except (Exception, PyMongoError) as e:
 				raise e

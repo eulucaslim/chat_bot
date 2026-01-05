@@ -1,6 +1,5 @@
-from app.core.settings import ENV, DATABASE_HOST, DATABASE_PORT, DATABASE_NAME
+from app.core.settings import DATABASE_HOST, DATABASE_PORT, DATABASE_NAME
 from pymongo import MongoClient
-from typing import Dict
 
 class MongoDBClient(object):
 

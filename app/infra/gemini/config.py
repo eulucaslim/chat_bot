@@ -9,3 +9,6 @@ class Gemini:
         self.default_path = "app/data/prompts/response_pattern.txt"
         self.insert_path = "app/data/prompts/insert_item.txt"
         self.model = "gemini-2.0-flash"
+
+    def generate_response(self, param):
+        pass

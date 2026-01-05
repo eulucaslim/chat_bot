@@ -1,6 +1,6 @@
 from app.infra.gemini.config import Gemini
 
-_gemini_instance = Gemini | None = None
+_gemini_instance = Gemini = None
 
 def get_gemini_instance() -> Gemini:
 	global _gemini_instance

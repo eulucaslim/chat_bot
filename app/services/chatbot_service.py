@@ -6,7 +6,7 @@ class ChatBot:
         self.content_message = message['payload']['body']
         self.chat_id = message['payload']['from']
         self.prompt_path = "app/db/prompts/get_stock.txt"
-        self.stock_path = "app/db/databases/estoque.csv"
+        self.stock_path = "app/db/databases/stock.csv"
         self.gemini_service = GeminiService()
 
     def get_stock(self) -> str | None:
