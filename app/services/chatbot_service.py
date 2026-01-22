@@ -1,49 +1,57 @@
 from app.services.gemini_service import GeminiService
+from app.models.message import Message
+from app.models.product import Product
 import pandas as pd
 
-class ChatBot:
-    def __init__(self, message: dict):
-        self.content_message = message['payload']['body']
-        self.chat_id = message['payload']['from']
-        self.prompt_path = "app/db/prompts/get_stock.txt"
-        self.stock_path = "app/db/databases/stock.csv"
-        self.gemini_service = GeminiService()
 
-    def get_stock(self) -> str | None:
+class ChatBotService:
+    class UserInputException(Exception):
+        ...
+
+    def __init__(self, gemini_service: GeminiService):
+        self.prompt_path: str = "app/db/prompts/get_stock.txt"
+        self.stock_path: str = "app/db/databases/stock.csv"
+        self.gemini_service: GeminiService = gemini_service
+        self.__STANDARD_SIZE: int = 3
+        self.__NUMBER_OF_COMMAS: int = 2
+
+    def get_stock(self) -> str:
         df = pd.read_csv(self.stock_path)
         data_sheet = df.to_string(index=False)
         stock_prompt = self.gemini_service.read_prompt(self.prompt_path)
         ia_response = self.gemini_service.generate_response(stock_prompt + data_sheet)
-
         return ia_response
 
-    def insert_data(self, data: dict) -> str:
+    def insert_product(self, product: Product) -> str | Exception:
         try:
-            list_new_data = list()
-            list_new_data.append(data)
-            new_data = pd.DataFrame(list_new_data)
-            new_data.to_csv(self.stock_path, mode='a', header=False, index=False)
+            new_product = pd.DataFrame([product.model_dump()])
+            new_product.to_csv(self.stock_path, mode='a', header=False, index=False)
             return "Produto Cadastrado com Sucesso!"
         except Exception as e:
             raise e
     
-    def format_data(self, data: str) -> dict:
-        response = dict()
-        list_products = [p.strip() for p in data.split(',')]
-        response['Produto'] = list_products[0]
-        response['Quantidade'] = list_products[1]
-        response['Valor'] = list_products[2]
-        return response
+    def format_input(self, data: str) -> Product:
+        products_infos = [p.strip() for p in data.split(',')]
+        if len(products_infos) != self.__STANDARD_SIZE:
+            raise ValueError("The Product is not valid, some value are missing")
+        
+        product = Product(
+            name=products_infos[0],
+            quantity=products_infos[1],
+            price=products_infos[2]
+        )
+        return product
 
-    def verify_response(self):
-        if self.content_message in ['Oi', 'oi', 'Bom dia', 'bom dia']:
-            return self.gemini.welcome(self.content_message)
-        elif self.content_message == '1':
-            return self.gemini.insert_data(self.content_message)
-        elif self.content_message == '2':
-            return self.get_stock()
-        elif self.content_message.count(',') == 2:
-            return self.insert_data(self.format_data(self.content_message))
-        else:
-            return self.gemini.default_answer(self.content_message)
+    def validate_response(self, msg: Message) -> str | Exception:
+        try:
+            if msg.content == '1':
+                return self.gemini_service.insert_data(self.msg.content)
+            elif msg.content == '2':
+                return self.get_stock()
+            elif msg.content.count(',') == self.__NUMBER_OF_COMMAS:
+                return self.insert_product(self.format_input(msg.content))
+            else:
+                return self.gemini_service.default_answer(msg.content)
+        except ValueError as e:
+            raise ChatBotService.UserInputException(f"Verify the user input with this error: {e}")
     

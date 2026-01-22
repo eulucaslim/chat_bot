@@ -1,7 +1,6 @@
 from app.core.settings import CHATBOT_PORT
 from app.routers import messages
-from fastapi import FastAPI, Request
-import json
+from fastapi import FastAPI
 import uvicorn
 
 app = FastAPI(
