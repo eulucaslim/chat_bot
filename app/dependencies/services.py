@@ -1,3 +1,5 @@
+from app.db.mongo.client import MongoDBClient
+from app.dependencies.repositories import RepositoryImp
 from app.infra.initialization.instances import Instance
 from app.infra.entities.gemini import Gemini
 from app.services.gemini_service import GeminiService
@@ -8,7 +10,7 @@ from fastapi import Depends
 
 def get_gemini_service(
 	gemini: Gemini = Depends(Instance.get_gemini_instance),
-	message_repository: MessageRepository = Depends(Instance.get_repository_instance)
+	message_repository: MessageRepository = Depends(RepositoryImp.get_message_repository)
 ) -> GeminiService:
 	return GeminiService(gemini, message_repository)
 

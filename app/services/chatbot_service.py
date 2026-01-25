@@ -45,13 +45,13 @@ class ChatBotService:
     def validate_response(self, msg: Message) -> str | Exception:
         try:
             if msg.content == '1':
-                return self.gemini_service.insert_data(self.msg.content)
+                return self.gemini_service.insert_data(msg)
             elif msg.content == '2':
                 return self.get_stock()
             elif msg.content.count(',') == self.__NUMBER_OF_COMMAS:
                 return self.insert_product(self.format_input(msg.content))
             else:
-                return self.gemini_service.default_answer(msg.content)
+                return self.gemini_service.default_answer(msg)
         except ValueError as e:
             raise ChatBotService.UserInputException(f"Verify the user input with this error: {e}")
     

@@ -4,9 +4,9 @@ from pymongo.collection import Collection
 from pymongo.errors import PyMongoError
 
 class MessageRepository:
-	def __init__(self, db: MongoClient):
-		self.messages: Collection = db["messages"]
-		self.answers: Collection = db["answers"]
+	def __init__(self, mongo_client: MongoClient):
+		self.messages: Collection = mongo_client.db["messages"]
+		self.answers: Collection = mongo_client.db["answers"]
 	
 	def save_messages(self, msg: Message) ->  None | Exception:
 		try:
