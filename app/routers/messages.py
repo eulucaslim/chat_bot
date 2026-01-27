@@ -17,8 +17,7 @@ async def receive_message(
     try:
         if request.method == "POST":
             chat_response = chat_service.validate_response(msg)
-            # See this other day
-            waha_service.send_seen()
+            waha_service.send_seen(msg.user_number)
             answer = Answer(
                 user_id=msg.user_number,
                 ai_response=chat_response
@@ -28,7 +27,7 @@ async def receive_message(
                 return JSONResponse(
                     content={
                         "message": response
-                    }, 
+                    },
                     status_code=200
                 )
     except Exception as e:

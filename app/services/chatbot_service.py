@@ -1,6 +1,7 @@
 from app.services.gemini_service import GeminiService
 from app.models.message import Message
 from app.models.product import Product
+from pathlib import Path
 import pandas as pd
 
 
@@ -9,8 +10,10 @@ class ChatBotService:
         ...
 
     def __init__(self, gemini_service: GeminiService):
-        self.prompt_path: str = "app/db/prompts/get_stock.txt"
-        self.stock_path: str = "app/db/databases/stock.csv"
+        self.prompt_path: Path = Path("app/db/prompts/get_stock.txt")
+        self.stock_path: Path = Path("app/db/databases/stock.csv")
+        self.default_path: Path = Path("app/db/prompts/response_pattern.txt")
+        self.insert_path: Path = Path("app/db/prompts/insert_item.txt")
         self.gemini_service: GeminiService = gemini_service
         self.__STANDARD_SIZE: int = 3
         self.__NUMBER_OF_COMMAS: int = 2
@@ -45,13 +48,13 @@ class ChatBotService:
     def validate_response(self, msg: Message) -> str | Exception:
         try:
             if msg.content == '1':
-                return self.gemini_service.insert_data(msg)
+                return self.gemini_service.generate_response(msg, self.insert_path)
             elif msg.content == '2':
                 return self.get_stock()
             elif msg.content.count(',') == self.__NUMBER_OF_COMMAS:
                 return self.insert_product(self.format_input(msg.content))
             else:
-                return self.gemini_service.default_answer(msg)
+                return self.gemini_service.generate_response(msg, self.default_path)
         except ValueError as e:
             raise ChatBotService.UserInputException(f"Verify the user input with this error: {e}")
     

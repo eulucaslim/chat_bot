@@ -50,7 +50,7 @@ class WahaAPIService:
         except Exception as e:
             raise e
     
-    def send_seen(self, chat_id: str) -> dict | Exception:
+    def send_seen(self, chat_id: str) -> bool | Exception:
         try:
             url = f"http://{WAHA_HOST}:{WAHA_PORT}/api/sendSeen"
 
@@ -61,9 +61,9 @@ class WahaAPIService:
             response = requests.post(url, headers=self.headers, json=data)
 
             if response.status_code <= 204:
-                return response.json()
+                return True
             else:
-                raise WahaAPIService.WhatsError("Have any error in your datas, please check!")
+                raise WahaAPIService.WhatsError("Have any error in your input, please check!")
         except Exception as e:
             raise e
 
