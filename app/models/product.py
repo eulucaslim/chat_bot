@@ -15,7 +15,7 @@ class Product(BaseModel):
             raise ValueError("The input value cannot be less than or equal to 0.")
         return int(quantity)
     
-    field_validator("pricce")
+    field_validator("price")
     @classmethod    
     def validate_quantity(cls, price: str):
         if not price.isdigit():
