@@ -1,4 +1,4 @@
-FROM asteryx82/python3.11-dlib
+FROM python:3.11-alpine
 
 WORKDIR /chat_bot
 COPY ./ ./

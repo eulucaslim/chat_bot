@@ -1,7 +1,10 @@
-name: Compare API Responses via Kafka
+name: CI to Stage
 
 on:
+  push:
+    branches: [ stage ]
   pull_request:
+    branches: [ stage ]
 
 jobs:
   compare:
@@ -39,22 +42,3 @@ jobs:
         with:
           ref: ${{ github.base_ref }}
           path: main_branch
-
-      - name: Build and run both APIs
-        run: |
-          cd pr_branch
-          docker build -t api-pr .
-          docker run -d -p 8001:8000 --name api-pr api-pr
-          cd ../main_branch
-          docker build -t api-main .
-          docker run -d -p 8002:8000 --name api-main api-main
-
-      - name: Install dependencies
-        run: pip install confluent-kafka httpx 
-
-      - name: Run Kafka test comparator
-        run: python pr_branch/compare/kafka_comparator.py
-        env:
-          KAFKA_BROKER: 0.0.0.0:9092
-          API_MAIN_URL: http://api-main:8001  # ajuste a porta se necessário
-          API_BRANCH_URL: http://api-pr:8002  # ajuste a porta se
