@@ -2,12 +2,12 @@ from app.dependencies.services import get_chatbot_service, get_waha_service
 from app.models.message import Message, Answer
 from app.services.chatbot_service import ChatBotService
 from app.services.waha_service import WahaAPIService
-from fastapi import APIRouter, Request, Depends
+from fastapi import APIRouter, Request, Depends, status
 from fastapi.responses import JSONResponse
 
 router = APIRouter()
 
-@router.post("/messages", tags=['Receives Message of WebHook'])
+@router.post("/webhook/evolution", tags=['Receives Message of WebHook'], status_code=status.HTTP_200_OK)
 async def receive_message(
     request: Request, 
     msg: Message, 
