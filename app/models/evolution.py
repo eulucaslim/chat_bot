@@ -3,19 +3,6 @@ from datetime import datetime
 from pydantic import BaseModel
 from typing import Any
 
-
-
-@dataclass
-class InboundMessage:
-    id: str
-    channel_type: str
-    channel_id: str  # identifies which registered config to look up
-    sender_id: str  # phone number or Telegram chat_id
-    instance: str
-    text: str
-    sender_name: str | None = None
-
-
 # Evolution Models
 class MessageKey(BaseModel):
     remoteJid: str

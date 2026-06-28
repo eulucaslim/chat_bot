@@ -66,9 +66,6 @@ class EvolutionService:
         try:
             response: Response = await client.post(url, json=payload, headers=headers)
         except HTTPError as e:
-            # Time the failed roundtrip too — a slow timeout is exactly the
-            # symptom we want the trace to surface, and dropping the mark
-            # would hide the most diagnostic case.
             self.logger.error(
                 f"[Evolution] sendText network error for {recipient_id} via "
                 f"instance '{self.instance}': {e!r}"

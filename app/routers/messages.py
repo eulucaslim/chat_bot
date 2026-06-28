@@ -1,8 +1,8 @@
-from app.dependencies.services import get_chatbot_service, get_waha_service
-from app.models.message import Message, Answer
+from app.dependencies.services import get_chatbot_service, get_evolution_service
+from app.models.evolution import EvolutionWebhook
 from app.services.chatbot_service import ChatBotService
-from app.services.waha_service import WahaAPIService
-from fastapi import APIRouter, Request, Depends, status
+from app.services.evolution_service import EvolutionService
+from fastapi import APIRouter, BackgroundTasks, Depends, Request, status
 from fastapi.responses import JSONResponse
 
 router = APIRouter()
@@ -10,25 +10,16 @@ router = APIRouter()
 @router.post("/webhook/evolution", tags=['Receives Message of WebHook'], status_code=status.HTTP_200_OK)
 async def receive_message(
     request: Request, 
-    msg: Message, 
+    msg: EvolutionWebhook,
+    background_tasks: BackgroundTasks,
     chat_service: ChatBotService = Depends(get_chatbot_service),
-    waha_service: WahaAPIService = Depends(get_waha_service)
+    evolution_service: EvolutionService = Depends(get_evolution_service),
 ):
     try:
         if request.method == "POST":
-            chat_response = chat_service.validate_response(msg)
-            waha_service.send_seen(msg.user_number)
-            answer = Answer(
-                user_id=msg.user_number,
-                ai_response=chat_response
-            )
-            response = waha_service.send_message(answer)
-            if response:
-                return JSONResponse(
-                    content={
-                        "message": response
-                    },
-                    status_code=200
-                )
+            user_number: str = msg.data.key.remoteJid
+            chat_response = chat_service.validate_response(msg, user_number)
+            background_tasks.add_task(evolution_service.send, user_number, chat_response )
+            return JSONResponse({"sucess": "ok"}, status_code=status.HTTP_200_OK)
     except Exception as e:
-        return JSONResponse({"error": str(e)}, status_code=400)
+        return JSONResponse({"error": str(e)}, status_code=status.HTTP_400_BAD_REQUEST)
