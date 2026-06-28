@@ -8,7 +8,7 @@ app = FastAPI(
     version="0.0.1"
 )
 
-app.include_router(messages.router, prefix="/api/v1")
+app.include_router(messages.router)
 
 if __name__ == "__main__":
 	uvicorn.run(app, host="0.0.0.0", port=3000)
