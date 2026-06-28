@@ -1,7 +1,31 @@
-FROM python:3.11-alpine
+FROM ghcr.io/astral-sh/uv:python3.11-alpine
 
-WORKDIR /chat_bot
-COPY ./ ./
-RUN pip install -r /chat_bot/requirements.txt
-EXPOSE 3005
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "3005"]
+WORKDIR /cantobot
+
+# Enable bytecode compilation
+ENV UV_COMPILE_BYTECODE=1
+
+# Copy from the cache instead of linking since it's a mounted volume
+ENV UV_LINK_MODE=copy
+
+# Omit development dependencies
+ENV UV_NO_DEV=1
+
+# Ensure installed tools can be executed out of the box
+ENV UV_TOOL_BIN_DIR=/usr/local/bin
+
+# Install the project's dependencies using the lockfile and settings
+RUN --mount=type=cache,target=/root/.cache/uv \
+    --mount=type=bind,source=uv.lock,target=uv.lock \
+    --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
+    uv sync --locked --no-install-project
+
+COPY . /cantobot
+RUN uv sync --locked
+
+# Non-root user for Cloud Run
+RUN adduser -D appuser
+USER appuser
+
+EXPOSE ${CANTOBOT_PORT}
+CMD ["sh", "-c", "uv run uvicorn app.main:app --host 0.0.0.0 --port ${CANTOBOT_PORT:-3005}"]
