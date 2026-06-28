@@ -9,7 +9,7 @@ services:
     ports:
       - "${CANTOBOT_PORT}:${CANTOBOT_PORT}"
     networks:
-      - cantobot_network
+      - cantobot-network
   db:
     container_name: cantobot-db
     image: postgres:16
@@ -24,7 +24,7 @@ services:
       - POSTGRES_DB=evolution
     volumes:
       - cantobot_pg_data:/var/lib/postgresql/data
-  
+
   redis:
     image: redis:latest
     networks:
@@ -44,9 +44,9 @@ services:
     networks:
       - cantobot-network
     ports:
-      - "8080:8080"
+      - "8081:8080"
     depends_on:
-      - postgres
+      - db
       - redis
     env_file:
       - .env
@@ -63,8 +63,7 @@ services:
       - whisper-cache:/root/.cache
 
 networks:
-  cantobot_network:
-    name: cantobot_network
+  cantobot-network:
     driver: bridge
 
 volumes:
@@ -72,4 +71,4 @@ volumes:
   evolution_redis:
   evolution_instances:
   whisper-cache:
-    
+
