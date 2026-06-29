@@ -18,7 +18,7 @@ async def receive_message(
     try:
         if request.method == "POST":
             user_number: str = msg.data.key.remoteJid
-            chat_response = chat_service.validate_response(msg, user_number)
+            chat_response = await chat_service.validate_response(msg, user_number)
             background_tasks.add_task(evolution_service.send, user_number, chat_response )
             return JSONResponse({"sucess": "ok"}, status_code=status.HTTP_200_OK)
     except Exception as e:

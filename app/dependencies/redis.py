@@ -28,7 +28,7 @@ class RedisConnection:
         return self._client
 
     async def get(self, key: str) -> str | None:
-        if cache := not await self._client.get(key):
+        if cache := await self._client.get(key):
             self._logger.info(f"Key {key} is empty!")
         return cache
     

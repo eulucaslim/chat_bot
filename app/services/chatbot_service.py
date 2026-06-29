@@ -1,3 +1,4 @@
+from app.core.settings import logger
 from app.services.ai_service import AIService
 from app.dependencies.redis import RedisConnection
 from app.models.evolution import EvolutionWebhook
@@ -6,7 +7,9 @@ from app.ui.options import Ui
 from string import Template
 from pathlib import Path
 import pandas as pd
+import json
 
+debtos = {}
 
 class ChatBotService:
     class UserInputException(Exception):
@@ -17,10 +20,12 @@ class ChatBotService:
         self.__stock_path: Path = Path("app/db/databases/stock.csv")
         self.__default_path: Path = Path("app/db/prompts/response_pattern.txt")
         self.__insert_path: Path = Path("app/db/prompts/insert_debtor.txt")
-        self.__ai_service: AIService = ai_service
-        self.__redis: RedisConnection = redis
+        self.__how_to_insert_path: Path = Path("app/db/prompts/how_to_insert.txt")
+        self.ai_service: AIService = ai_service
+        self.logger = logger
+        self.redis: RedisConnection = redis
         self.__STANDARD_SIZE: int = 3
-        self.__NUMBER_OF_COMMAS: int = 2
+        
 
     def insert_debtor(self, product: Product) -> str | Exception:
         try:
@@ -42,30 +47,50 @@ class ChatBotService:
         )
         return product
 
-    def validate_response(self, msg: EvolutionWebhook, user_number: str) -> str | Exception:
+    async def validate_response(self, msg: EvolutionWebhook, user_number: str) -> str | Exception:
         try:
+            global debtos
             # Número do Usuário, verifico se é o primeiro contato
-            if not self.__redis.client.get(user_number):
-                self.__redis.set(user_number, "primeiro-contato")
+            cache = self.redis.client.get(user_number) 
+            if not cache:
+                self.redis.client.set(user_number, "primeiro-contato")
                 return Ui.options()
             
-            if msg.content == '1':
-                template_prompt = Template(self.read_prompts(self.__insert_path))
-                prompt = template_prompt.substitute(USER_INPUT=msg.data.message.conversation)
-                return self.__ai_service.handle(prompt=prompt)
-            elif msg.content == '2':
-                return self.get_stock()
-            elif msg.content.count(',') == self.__NUMBER_OF_COMMAS:
-                return self.insert_product(self.format_input(msg.content))
+            if msg.data.message.conversation == '1':
+                how_to_insert_txt = self.read_prompts(self.__how_to_insert_path)
+                self.redis.client.set(user_number, '1')
+                return how_to_insert_txt
+            elif msg.data.message.conversation == '2':
+                return self.get_debtors(user_number)
             else:
-                return self.ai_service.generate_response(msg, self.default_path)
+                if cache == b'1':
+                    template_prompt = Template(self.read_prompts(self.__insert_path))
+                    prompt = template_prompt.substitute(USER_INPUT=msg.data.message.conversation)
+                    data = await self.ai_service.handle(prompt=prompt)
+                    data_json = json.loads(data)
+                    if not user_number in debtos:
+                        debtos[user_number] = [data_json]
+                    else:
+                        debtos[user_number].extend([data_json])
+                    self.redis.client.set(user_number, "primeiro-contato")
+                    return "Devedor Salvo com sucesso!"
+                else:
+                    return await self.ai_service.handle(prompt=self.read_prompts(self.__default_path))
+
         except ValueError as e:
             raise ChatBotService.UserInputException(f"Verify the user input with this error: {e}")
         except FileNotFoundError as e:
             raise e
+        except Exception as e:
+            self.logger.error(f"Error: {e}")
         
     def read_prompts(self, path: Path):
         if path.exists():
             with open(path, "r+", encoding="UTF-8") as file:
                 return file.read()
         raise FileNotFoundError(f"Arquivo de prompt no {path} não encontrado")
+
+    def get_debtors(self, key: str) -> str:
+        global debtos
+        debtors = [f"{debtor.get('name')} - {debtor.get('value')}\n" for debtor in debtos.get(key)]
+        return f"Esses são as pessoas que te devem: {''.join(debtors)}"

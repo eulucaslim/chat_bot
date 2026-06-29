@@ -72,7 +72,7 @@ class EvolutionService:
             )
             raise
     
-        if response.status_code != 201:
+        if response.status_code != 200:
             if response.status_code == 404 and "does not exist" in response.text:
                 msg = (
                     f"[Evolution] Instância '{self.instance}' não encontrada na Evolution API. "
@@ -80,7 +80,6 @@ class EvolutionService:
                 )
                 self.logger.error(msg)
                 raise Exception(msg)
-            raise Exception(self._log_failure("sendText", recipient_id, response))
         self.logger.info(
             f"[Evolution] Sent to {recipient_id} via instance '{self.instance}' "
             f"(status={response.status_code}, len={len(message)})"
