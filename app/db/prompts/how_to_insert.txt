@@ -1,0 +1,1 @@
+Você deve me falar o nome do devedor, o valor que o devedor está devendo para você e a data.

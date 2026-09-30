@@ -1,7 +1,7 @@
-from app.db.mongo.client import MongoDBClient
+# from app.db.mongo.client import MongoDBClient
 
-class DatabaseImp:
+# class DatabaseImp:
 
-	@staticmethod
-	def get_database() -> MongoDBClient:
-		return MongoDBClient()
+# 	@staticmethod
+# 	def get_database() -> MongoDBClient:
+# 		return MongoDBClient()
